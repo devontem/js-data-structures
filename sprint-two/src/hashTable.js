@@ -1,19 +1,31 @@
-var HashTable = function(){
+var HashTable = function(){ // Time Complexity: O(1)
   this._limit = 8;
   this._storage = LimitedArray(this._limit);
 };
 
-HashTable.prototype.insert = function(k, v){
+HashTable.prototype.insert = function(k, v){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
   var tuple = this._storage.get(i);
   if (!tuple || tuple[0] === k){
-  	this._storage.set(i, [k,v]);
+    this._storage.set(i, [k,v]);
   } else {
-  	this._storage.set(i, [tuple, [k,v]]);
+    if (!Array.isArray(tuple[0])){
+      this._storage.set(i, [tuple, [k,v]]); 
+    } else {
+      var isSet = false;
+      for (var j = 0; j < tuple.length; j++) {
+        if (tuple[j][0] === k) {
+          tuple[j][1] = v;
+          isSet = true;
+        }
+      }
+      if (!isSet){ tuple.push([k, v]); }
+      this._storage.set(i, tuple);
+    }
   }
 };
 
-HashTable.prototype.retrieve = function(k){
+HashTable.prototype.retrieve = function(k){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
   var tuple = this._storage.get(i);
   if (!Array.isArray(tuple[0])) {
@@ -28,7 +40,7 @@ HashTable.prototype.retrieve = function(k){
   }
 };
 
-HashTable.prototype.remove = function(k){
+HashTable.prototype.remove = function(k){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
   var tuple = this._storage.get(i);
   if (!Array.isArray(tuple[0])) {
@@ -38,7 +50,7 @@ HashTable.prototype.remove = function(k){
     for (var j = 0; j < tuple.length; j++) {
       if (tuple[j][0] === k) {
         tuple[j][1] = null; 
-        //this._storage.set(i, tuple[j][1]);
+        this._storage.set(i, tuple);
       }
     }
   }

@@ -2,21 +2,20 @@ var Tree = function(value){
   var newTree = {};
   newTree.value = value;
 
-  // your code here
-  newTree.children = [];  // fix me
+  newTree.children = []; 
 
-  _.extend(newTree,treeMethods);
+  _.extend(newTree,treeMethods); // Time Complexity: O(n);
 
   return newTree;
 };
 
 var treeMethods = {};
 
-treeMethods.addChild = function(value){
+treeMethods.addChild = function(value){ // Time Complexity: O(1)
   this.children.push(Tree(value));
 };
 
-treeMethods.contains = function(target){
+treeMethods.contains = function(target){ // Time Complexity: O(n)
   if (this.value === target){
     return true;
   } else {
