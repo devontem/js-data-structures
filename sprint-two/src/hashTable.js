@@ -5,53 +5,53 @@ var HashTable = function(){ // Time Complexity: O(1)
 
 HashTable.prototype.insert = function(k, v){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
-  var tuple = this._storage.get(i);
-  if (!tuple || tuple[0] === k){
-    this._storage.set(i, [k,v]);
-  } else {
-    if (!Array.isArray(tuple[0])){
-      this._storage.set(i, [tuple, [k,v]]); 
-    } else {
-      var isSet = false;
-      for (var j = 0; j < tuple.length; j++) {
-        if (tuple[j][0] === k) {
-          tuple[j][1] = v;
-          isSet = true;
-        }
-      }
-      if (!isSet){ tuple.push([k, v]); }
-      this._storage.set(i, tuple);
+  var bucket = this._storage.get(i);
+  
+  if (!bucket){
+    bucket = [];
+    this._storage.set(i, bucket);
+  }
+  
+  var isSet = false;
+  for (var j = 0; j < bucket.length; j++){
+    var tuple = bucket[j];
+    if (tuple[0] === k){
+      tuple[1] = v;
+      isSet = true;
+      break;
     }
   }
+  if (!isSet){ bucket.push([k, v]); }
+  
 };
 
 HashTable.prototype.retrieve = function(k){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
-  var tuple = this._storage.get(i);
-  if (!Array.isArray(tuple[0])) {
-    return tuple[1];
+  var bucket = this._storage.get(i);
+  if (!bucket) {
+    return null;
   }
-  else {
-    for (var j = 0; j < tuple.length; j++) {
-      if (tuple[j][0] === k) {
-        return tuple[j][1];
-      }
+  for (var j = 0; j < bucket.length; j++) {
+    var tuple = bucket[j];
+    if (tuple[0] === k) {
+      return tuple[1];
     }
   }
+  return null;
 };
 
 HashTable.prototype.remove = function(k){ // Time Complexity: O(n)
   var i = getIndexBelowMaxForKey(k, this._limit);
-  var tuple = this._storage.get(i);
-  if (!Array.isArray(tuple[0])) {
-    this._storage.set(i, [k,null]);
-  }
-  else {
-    for (var j = 0; j < tuple.length; j++) {
-      if (tuple[j][0] === k) {
-        tuple[j][1] = null; 
-        this._storage.set(i, tuple);
-      }
+  var bucket = this._storage.get(i);
+  
+  if (!bucket){ return ; }
+  
+  for (var j = 0; j < bucket.length; j++){
+    var tuple = bucket[j];
+    if (tuple[0] === k){
+      var value = tuple[1];
+      bucket.splice(j, 1);
+      return value;
     }
   }
 };
